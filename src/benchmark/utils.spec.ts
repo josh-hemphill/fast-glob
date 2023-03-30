@@ -3,14 +3,12 @@ import * as assert from 'assert';
 import * as utils from './utils';
 
 describe('Benchmark → Utils', () => {
-	const oldProcessHrtime = process.hrtime;
 	const oldProcessMemoryUsage = process.memoryUsage;
 
 	before(() => {
 		process.env.FG_TEST_ENV_INTEGER = '1';
 		process.env.FG_TEST_ENV_OBJECT = '{ "value": true }';
 
-		process.hrtime = (() => [0, 1e7]) as NodeJS.HRTime;
 		process.memoryUsage = () => ({ external: 0, rss: 0, heapTotal: 0, heapUsed: 10 * 1e6 });
 	});
 
@@ -18,50 +16,7 @@ describe('Benchmark → Utils', () => {
 		delete process.env.FG_TEST_ENV_INTEGER;
 		delete process.env.FG_TEST_ENV_OBJECT;
 
-		process.hrtime = oldProcessHrtime;
 		process.memoryUsage = oldProcessMemoryUsage;
-	});
-
-	describe('.convertHrtimeToMilliseconds', () => {
-		it('should return milliseconds', () => {
-			const hrtime: [number, number] = [0, 1e7];
-
-			const expected = 10;
-
-			const actual = utils.convertHrtimeToMilliseconds(hrtime);
-
-			assert.strictEqual(actual, expected);
-		});
-	});
-
-	describe('.convertBytesToMegaBytes', () => {
-		it('should return megabytes', () => {
-			const expected = 1;
-
-			const actual = utils.convertBytesToMegaBytes(1e6);
-
-			assert.strictEqual(actual, expected);
-		});
-	});
-
-	describe('.timeStart', () => {
-		it('should return hrtime', () => {
-			const expected: [number, number] = [0, 1e7];
-
-			const actual = utils.timeStart();
-
-			assert.deepStrictEqual(actual, expected);
-		});
-	});
-
-	describe('.timeEnd', () => {
-		it('should return diff between hrtime\'s', () => {
-			const expected = 10;
-
-			const actual = utils.timeEnd([0, 1e7]);
-
-			assert.strictEqual(actual, expected);
-		});
 	});
 
 	describe('.getMemory', () => {

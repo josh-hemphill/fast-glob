@@ -1,33 +1,18 @@
+import { performance } from 'perf_hooks';
 import { SuiteMeasures } from './runner';
 
 import stdev = require('compute-stdev'); // eslint-disable-line @typescript-eslint/no-require-imports
 
-const NANOSECONDS_IN_SECOND = 1e9;
-const MICROSECONDS_IN_SECOND = 1e6;
-const BYTES_IN_MEGABYTE = 1e6;
-
-export function convertHrtimeToMilliseconds(hrtime: [number, number]): number {
-	const nanoseconds = hrtime[0] * NANOSECONDS_IN_SECOND;
-
-	return (nanoseconds + hrtime[1]) / MICROSECONDS_IN_SECOND;
+export function timeStart(): number {
+	return performance.now();
 }
 
-export function convertBytesToMegaBytes(bytes: number): number {
-	return bytes / MICROSECONDS_IN_SECOND;
-}
-
-export function timeStart(): [number, number] {
-	return process.hrtime();
-}
-
-export function timeEnd(start: [number, number]): number {
-	const hrtime = process.hrtime(start);
-
-	return convertHrtimeToMilliseconds(hrtime);
+export function timeEnd(start: number): number {
+	return performance.now() - start;
 }
 
 export function getMemory(): number {
-	return process.memoryUsage().heapUsed / BYTES_IN_MEGABYTE;
+	return process.memoryUsage().heapUsed;
 }
 
 export function formatMeasures(matches: number, time: number, memory: number): string {
